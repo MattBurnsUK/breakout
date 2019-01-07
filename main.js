@@ -52,10 +52,17 @@ function loop() {
   ctx.fillRect(0, 0, width, height);
 
     // Make the targets
-    /* <-------NOTES --- need to change so x and y coords update themselves so targets aren't drawn on top of each other -----------> */
+    /* <-------NOTES --- this works and generates the targets correctly, BUT their coords are not updated if the screen is resized after they are generated */
+    var xCoor = 10;
+    var yCoor = 10;
   while (targets.length < 10) {
-    var makeTarget = new Target(10,10,true,"magenta",10,10);  
+    var makeTarget = new Target(xCoor,yCoor,true,"magenta",40,10);  
     targets.push(makeTarget);
+      xCoor += 60;
+     if (xCoor > width) {
+          xCoor = 10;
+          yCoor += 50;
+      }
 
      // increaseScore();
   }
