@@ -91,6 +91,24 @@ Ball.prototype.update = function() {
   this.y += this.velY;
 }
 
+// collision detection on the ball
+Ball.prototype.collisionDetect = function() {
+  for (var j = 0; j < targets.length; j++) {
+      // find the vertical and horizontal distances between the circles center and the rectangles center
+      var distX = Math.abs(theBall.x - targets[j].x-targets[j].width/2);
+      var distY = Math.abs(theBall.y - targets[j].y-targets[j].h/2);
+      //if distance is greater than halfBall+halfTarget then they are too far apart to be colliding
+      if (distX > (targets[j].width/2 + theBall.size)) { }
+      if (distY > (targets[j].height/2 + theBall.size)) { }
+      //if the distance is less than halfTarget they are definately colliding
+      if (distX <= (targets[j].width/2)) { targets[j].exists = false; }
+      if (distY <= (targets[j].height/2)) { targets[j].exists = false; }
+      //test for collision at the corners using Pythagoras to compare distance between ball and target centers.
+      var dx = distX-targets[j].width/2;
+      var dy = distY-targets[j].height/2;
+    if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
+      
+
 // make sure the bouncer isn't going off the edge of the screen
 bouncer.prototype.checkBounds = function() {
   if ((this.x + this.bwidth) >= width) {
@@ -144,7 +162,8 @@ function loop() {
         thebouncer.checkBounds();
         thebouncer.draw();
         theBall.update();
-        theBall.draw()
+        theBall.draw();
+      theBall.collisionDetect();
  }    
 
     
