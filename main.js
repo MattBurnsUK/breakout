@@ -50,9 +50,9 @@ bouncer.prototype.setControl = function() {
     var _this = this;
     window.onkeydown = function(e) {
         if (e.keyCode === 37) {
-          _this.x -= _this.velX;
+          _this.x -= 5;
         } else if (e.keyCode === 39) {
-          _this.x += _this.velX;
+          _this.x += 5;
         }
       }
 }
@@ -69,6 +69,39 @@ Ball.prototype.draw = function() {
   ctx.fill();
 }
 
+// checkbounds to handle the ball hitting the bounderies. Change direction of the ball
+Ball.prototype.update = function() {
+  if ((this.x + this.size) >= width) {
+    this.velX = -(this.velX);
+  }
+
+  if ((this.x - this.size) <= 0) {
+    this.velX = -(this.velX);
+  }
+
+  if ((this.y + this.size) >= height) {
+    this.velY = -(this.velY);
+  }
+
+  if ((this.y - this.size) <= 0) {
+    this.velY = -(this.velY);
+  }
+
+  this.x += this.velX;
+  this.y += this.velY;
+}
+
+// make sure the bouncer isn't going off the edge of the screen
+bouncer.prototype.checkBounds = function() {
+  if ((this.x + this.bwidth) >= width) {
+      this.x -= 1;
+  }
+
+  if (this.x < 0) {
+      this.x += 1;
+  }
+}
+
 
 /* :::::::::::: THE ANIMATION LOOP ::::::::::: */
 
@@ -78,14 +111,13 @@ var targets = [];
 
 var thebouncer = new bouncer(10, 100, "magenta");
       thebouncer.setControl();
-
+var theBall = new Ball(10, (height-30), "magenta", 2, 2, 20);
 
 function loop() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
   ctx.fillRect(0, 0, width, height);
             
-    var theBall = new Ball(10, (height-30), "magenta", 2, 2, 20);
-        theBall.draw();
+    
 
     // Make the targets
     /* <-------NOTES --- this works and generates the targets correctly, BUT their coords are not updated if the screen is resized after they are generated */
@@ -108,8 +140,11 @@ function loop() {
       if (targets[i].exists === true) {
         ctx.fillStyle = targets[i].color;
         targets[i].draw(); }
-      
+        
+        thebouncer.checkBounds();
         thebouncer.draw();
+        theBall.update();
+        theBall.draw()
  }    
 
     
