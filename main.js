@@ -32,21 +32,20 @@ function Ball(x, y, color, velX, velY, size) {
 }
 
 // the bouncer constructor
-function bouncer(x, y, color, bwidth, bheight){
+function bouncer(x, y, color, bwidth, bheight) {
     shape.call(this, x, y, color);
-    this.bwidth = 50;
+    this.bwidth = 200;
     this.bheight = 20;
 }
 
 
 /* ::::::::::::::: PROTOTYPES ::::::::::: */
 
-Target.prototype.draw = function() {
-    var _this = this;
-    ctx.fillRect(_this.x, _this.y, _this.width, _this.height)
+Target.prototype.draw = function () {
+    ctx.fillRect(this.x, this.y, this.width, this.height);
 }
 
-bouncer.prototype.setControl = function() {
+bouncer.prototype.setControl = function () {
     var _this = this;
     window.onkeydown = function(e) {
         if (e.keyCode === 37) {
@@ -59,7 +58,7 @@ bouncer.prototype.setControl = function() {
 
 bouncer.prototype.draw = function() {
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.bwidth, this.bheight)
+    ctx.fillRect(this.x, this.y, this.bwidth, this.bheight);
 }
 
 Ball.prototype.draw = function() {
@@ -95,18 +94,36 @@ Ball.prototype.update = function() {
 Ball.prototype.collisionDetect = function() {
   for (var j = 0; j < targets.length; j++) {
       // find the vertical and horizontal distances between the circles center and the rectangles center
-      var distX = Math.abs(theBall.x - targets[j].x-targets[j].width/2);
-      var distY = Math.abs(theBall.y - targets[j].y-targets[j].h/2);
+      var distX = Math.abs(theBall.x - targets[j].x+targets[j].width/2);
+      var distY = Math.abs(theBall.y - targets[j].y+targets[j].height/2);
       //if distance is greater than halfBall+halfTarget then they are too far apart to be colliding
-      if (distX > (targets[j].width/2 + theBall.size)) { }
-      if (distY > (targets[j].height/2 + theBall.size)) { }
+     // if (distX > (targets[j].width/2 + theBall.size)) { }
+    //  if (distY > (targets[j].height/2 + theBall.size)) { }
       //if the distance is less than halfTarget they are definately colliding
-      if (distX <= (targets[j].width/2)) { targets[j].exists = false; }
-      if (distY <= (targets[j].height/2)) { targets[j].exists = false; }
+      if (distX <= (targets[j].width/2) && distY <= (targets[j].height/2)) { 
+          targets[j].exists = false;
+          this.velX = -(this.velX); 
+          this.velY = -(this.velY);
+      }
       //test for collision at the corners using Pythagoras to compare distance between ball and target centers.
       var dx = distX-targets[j].width/2;
       var dy = distY-targets[j].height/2;
-    if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
+      if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
+      
+  }
+    //find the distances - vertical and horizontal - between the balls center and the bouncers center
+      var distA = Math.abs(theBall.x - thebouncer.x+thebouncer.width/2);
+      var distB = Math.abs(theBall.y - thebouncer.y+thebouncer.height/2);
+    // check for collision with thebouncer
+      if (distA <= (thebouncer.width/2)) { 
+        theBall.velX = -(this.velX); 
+        theBall.velY = -(this.velY);
+      }
+      if (distB <= (thebouncer.height/2)) {
+        theBall.velX = -(this.velX); 
+        theBall.velY = -(this.velY);
+      }
+}
       
 
 // make sure the bouncer isn't going off the edge of the screen
@@ -129,7 +146,7 @@ var targets = [];
 
 var thebouncer = new bouncer(10, 100, "magenta");
       thebouncer.setControl();
-var theBall = new Ball(10, (height-30), "magenta", 2, 2, 20);
+var theBall = new Ball(50, (height-30), "magenta", 1, 1, 20);
 
 function loop() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
