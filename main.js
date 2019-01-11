@@ -94,17 +94,18 @@ Ball.prototype.update = function() {
 Ball.prototype.collisionDetect = function() {
   for (var j = 0; j < targets.length; j++) {
       // find the vertical and horizontal distances between the circles center and the rectangles center
-      var distX = Math.abs(theBall.x - targets[j].x+targets[j].width/2);
-      var distY = Math.abs(theBall.y - targets[j].y+targets[j].height/2);
+      var distX = (theBall.x + theBall.size) - (targets[j].x-(targets[j].width/2));
+      var distY = (theBall.y+theBall.size) - (targets[j].y-(targets[j].height/2));
+      
       //if distance is greater than halfBall+halfTarget then they are too far apart to be colliding
      // if (distX > (targets[j].width/2 + theBall.size)) { }
     //  if (distY > (targets[j].height/2 + theBall.size)) { }
       //if the distance is less than halfTarget they are definately colliding
-      if (distX <= (targets[j].width/2) && distY <= (targets[j].height/2)) { 
+      
+      if (distX >= 0 && distY>= 0) {
           targets[j].exists = false;
-          this.velX = -(this.velX); 
-          this.velY = -(this.velY);
       }
+      
       //test for collision at the corners using Pythagoras to compare distance between ball and target centers.
       var dx = distX-targets[j].width/2;
       var dy = distY-targets[j].height/2;
@@ -112,17 +113,14 @@ Ball.prototype.collisionDetect = function() {
       
   }
     //find the distances - vertical and horizontal - between the balls center and the bouncers center
-      var distA = Math.abs(theBall.x - thebouncer.x+thebouncer.width/2);
-      var distB = Math.abs(theBall.y - thebouncer.y+thebouncer.height/2);
+      var distA = (theBall.x + theBall.size) - (thebouncer.x-(thebouncer.bwidth/2));
+      var distB = (theBall.y+theBall.size) - (thebouncer.y-(thebouncer.bheight/2));
     // check for collision with thebouncer
-      if (distA <= (thebouncer.width/2)) { 
-        theBall.velX = -(this.velX); 
-        theBall.velY = -(this.velY);
-      }
-      if (distB <= (thebouncer.height/2)) {
-        theBall.velX = -(this.velX); 
-        theBall.velY = -(this.velY);
-      }
+    if (distA >= 0 && distB >= 0) { 
+        // theBall.color = "green";
+       // theBall.velX *= -1; 
+        theBall.velY *= -1;
+    }
 }
       
 
@@ -142,11 +140,12 @@ bouncer.prototype.checkBounds = function() {
 
 var targets = [];
 
-// var testTarget = new Target(10,10,true,'rgba(255, 0, 0, 1)',100,100);
-
-var thebouncer = new bouncer(10, 100, "magenta");
+var thebouncer = new bouncer(10, (height - 20), "magenta");
       thebouncer.setControl();
 var theBall = new Ball(50, (height-30), "magenta", 1, 1, 20);
+
+// var testTarget = new Target(10,10,true,'rgba(255, 0, 0, 1)',100,100);
+
 
 function loop() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
@@ -175,13 +174,12 @@ function loop() {
       if (targets[i].exists === true) {
         ctx.fillStyle = targets[i].color;
         targets[i].draw(); }
-        
-        thebouncer.checkBounds();
+ }
+    thebouncer.checkBounds();
         thebouncer.draw();
+        theBall.collisionDetect();
         theBall.update();
         theBall.draw();
-      theBall.collisionDetect();
- }    
 
     
   requestAnimationFrame(loop); //requestAnimationFrame is a built in method, which runs the same method a set number of times per second to create a smooth animation.
