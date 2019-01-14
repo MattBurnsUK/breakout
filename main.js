@@ -92,6 +92,43 @@ Ball.prototype.update = function() {
 
 // collision detection on the ball
 Ball.prototype.collisionDetect = function() {
+    var V = SAT.Vector;
+    var C = SAT.Circle;
+    var P = SAT.Polygon;
+    
+    // test for ball hitting targets
+    
+    for (var j = 0; j < targets.length; j++) {
+        var circle = new C(new V(theBall.x,theBall.y), theBall.size);
+        var polygon = new P(new V(targets[j].x,targets[j].y), [
+            new V((targets[j].x+targets[j].width),targets[j].y), new V(targets[j].x,(targets[j].y+targets[j].height)), new V((targets[j].x+targets[j].width),(targets[j].y+targets[j].height))]);
+        var response = new SAT.Response();
+        var collided = SAT.testCirclePolygon(circle, polygon, response);
+
+        if (collided == true) {
+            targets[j]. exists = false;
+            //theBall.velX *= -1;
+        }
+    }
+    
+    // the coords for the targets about are in the wrong order!!!
+    
+    // test for ball hitting thebouncer
+    
+    var ball = new C(new V(theBall.x,theBall.y), theBall.size);
+    var bouncer = new P(new V(thebouncer.x,thebouncer.y), [
+            new V((thebouncer.x+thebouncer.bwidth),thebouncer.y), new V((thebouncer.x+thebouncer.bwidth),(thebouncer.y+thebouncer.bheight)), new V(thebouncer.x,(thebouncer.y+thebouncer.bheight))]);
+        var responseB = new SAT.Response();
+        var collidedB = SAT.testCirclePolygon(ball, bouncer, responseB);
+
+        if (collidedB == true) {
+            theBall.velX *= -1;
+            theBall.color = "green";
+        }
+    }
+    
+/*
+Ball.prototype.collisionDetect = function() {
   for (var j = 0; j < targets.length; j++) {
       // find the vertical and horizontal distances between the circles center and the rectangles center
     /*
@@ -112,8 +149,10 @@ Ball.prototype.collisionDetect = function() {
     //  var dx = distX-targets[j].width/2;
     //  var dy = distY-targets[j].height/2;
      // if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
-      */
+      
   }
+    
+    
     
     //find the distances - vertical and horizontal - between the balls center and the bouncers center
       var distA = Math.abs((theBall.x + theBall.size) - (thebouncer.x-(thebouncer.bwidth/2)));
@@ -126,7 +165,8 @@ Ball.prototype.collisionDetect = function() {
         theBall.velY *= -1;
     } 
 }
-      
+   
+   */
 
 // make sure the bouncer isn't going off the edge of the screen
 bouncer.prototype.checkBounds = function() {
