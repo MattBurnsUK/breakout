@@ -94,6 +94,7 @@ Ball.prototype.update = function() {
 Ball.prototype.collisionDetect = function() {
   for (var j = 0; j < targets.length; j++) {
       // find the vertical and horizontal distances between the circles center and the rectangles center
+    /*
       var distX = (theBall.x + theBall.size) - (targets[j].x-(targets[j].width/2));
       var distY = (theBall.y+theBall.size) - (targets[j].y-(targets[j].height/2));
       
@@ -102,25 +103,28 @@ Ball.prototype.collisionDetect = function() {
     //  if (distY > (targets[j].height/2 + theBall.size)) { }
       //if the distance is less than halfTarget they are definately colliding
       
-      if (distX >= 0 && distY>= 0) {
-          targets[j].exists = false;
-      }
+      if (distX >= 0 && distY >= 0) { 
+        // theBall.color = "green";
+       // theBall.velX *= -1; 
+          this.velY = -(this.velY);    }
       
       //test for collision at the corners using Pythagoras to compare distance between ball and target centers.
-      var dx = distX-targets[j].width/2;
-      var dy = distY-targets[j].height/2;
-      if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
-      
+    //  var dx = distX-targets[j].width/2;
+    //  var dy = distY-targets[j].height/2;
+     // if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
+      */
   }
+    
     //find the distances - vertical and horizontal - between the balls center and the bouncers center
-      var distA = (theBall.x + theBall.size) - (thebouncer.x-(thebouncer.bwidth/2));
-      var distB = (theBall.y+theBall.size) - (thebouncer.y-(thebouncer.bheight/2));
+      var distA = Math.abs((theBall.x + theBall.size) - (thebouncer.x-(thebouncer.bwidth/2)));
+      var distB = Math.abs((theBall.y+theBall.size) - (thebouncer.y-(thebouncer.bheight/2)));
     // check for collision with thebouncer
-    if (distA >= 0 && distB >= 0) { 
+    console.log(distA);
+    if (distA == 0 && distB == 0) { 
         // theBall.color = "green";
        // theBall.velX *= -1; 
         theBall.velY *= -1;
-    }
+    } 
 }
       
 
@@ -140,9 +144,9 @@ bouncer.prototype.checkBounds = function() {
 
 var targets = [];
 
-var thebouncer = new bouncer(10, (height - 20), "magenta");
+var thebouncer = new bouncer(10, (height - 200), "magenta");
       thebouncer.setControl();
-var theBall = new Ball(50, (height-30), "magenta", 1, 1, 20);
+var theBall = new Ball(50, (height-230), "magenta", 2, 2, 20);
 
 // var testTarget = new Target(10,10,true,'rgba(255, 0, 0, 1)',100,100);
 
