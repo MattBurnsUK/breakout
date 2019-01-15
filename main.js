@@ -6,7 +6,28 @@ var ctx = canvas.getContext('2d');
 var width = canvas.width = window.innerWidth;
 var height = canvas.height = window.innerHeight;
 
+var scoreBoard = document.querySelector("p").innerHTML;
+var targetCount = 0;
+    
+function increaseScore() {
+    targetCount++;
+    scoreBoard = "Target count: " + targetCount;
+    document.querySelector("p").innerHTML = scoreBoard;
+}
+
+function decreaseScore() {
+    targetCount--;
+    scoreBoard = "Target count: " + targetCount;
+    document.querySelector("p").innerHTML = scoreBoard;
+}
+
 /* ::::::::: ALL CONSTRUCTORS ::::::::::: */
+
+//the game constructor
+function game(lives, level){
+    this.lives = lives;
+    this.level = level;
+}
 
 // the basic "shape" constructor
 function shape(x, y, color) {
@@ -79,7 +100,9 @@ Ball.prototype.update = function() {
   }
 
   if ((this.y + this.size) >= height) {
-    this.velY = -(this.velY);
+   // this.velY = -(this.velY);
+      theGame.lives -= 1;
+      // and now stop or reset the animation somehow
   }
 
   if ((this.y - this.size) <= 0) {
@@ -101,72 +124,31 @@ Ball.prototype.collisionDetect = function() {
     for (var j = 0; j < targets.length; j++) {
         var circle = new C(new V(theBall.x,theBall.y), theBall.size);
         var polygon = new P(new V(targets[j].x,targets[j].y), [
-            new V((targets[j].x+targets[j].width),targets[j].y), new V(targets[j].x,(targets[j].y+targets[j].height)), new V((targets[j].x+targets[j].width),(targets[j].y+targets[j].height))]);
+            new V(0,0), new V(0,targets[j].height), new V(targets[j].width,targets[j].height), new V(targets[j].width,0)
+        ]);
         var response = new SAT.Response();
         var collided = SAT.testCirclePolygon(circle, polygon, response);
 
         if (collided == true) {
             targets[j]. exists = false;
-            //theBall.velX *= -1;
+            decreaseScore();
+            this.velY = -(this.velY);
         }
     }
-    
-    // the coords for the targets about are in the wrong order!!!
     
     // test for ball hitting thebouncer
     
     var ball = new C(new V(theBall.x,theBall.y), theBall.size);
-    var bouncer = new P(new V(thebouncer.x,thebouncer.y), [
-            new V((thebouncer.x+thebouncer.bwidth),thebouncer.y), new V((thebouncer.x+thebouncer.bwidth),(thebouncer.y+thebouncer.bheight)), new V(thebouncer.x,(thebouncer.y+thebouncer.bheight))]);
+    var Colbouncer = new P(new V(thebouncer.x,thebouncer.y), [
+        new V(thebouncer.x,thebouncer.y), new V(0,thebouncer.bheight), new V(thebouncer.bwidth,thebouncer.bheight), new V(thebouncer.bwidth,0)
+    ]);
         var responseB = new SAT.Response();
-        var collidedB = SAT.testCirclePolygon(ball, bouncer, responseB);
+        var collidedB = SAT.testCirclePolygon(ball, Colbouncer, responseB);
 
         if (collidedB == true) {
-            theBall.velX *= -1;
-            theBall.color = "green";
+            this.velY = -(this.velY);
         }
     }
-    
-/*
-Ball.prototype.collisionDetect = function() {
-  for (var j = 0; j < targets.length; j++) {
-      // find the vertical and horizontal distances between the circles center and the rectangles center
-    /*
-      var distX = (theBall.x + theBall.size) - (targets[j].x-(targets[j].width/2));
-      var distY = (theBall.y+theBall.size) - (targets[j].y-(targets[j].height/2));
-      
-      //if distance is greater than halfBall+halfTarget then they are too far apart to be colliding
-     // if (distX > (targets[j].width/2 + theBall.size)) { }
-    //  if (distY > (targets[j].height/2 + theBall.size)) { }
-      //if the distance is less than halfTarget they are definately colliding
-      
-      if (distX >= 0 && distY >= 0) { 
-        // theBall.color = "green";
-       // theBall.velX *= -1; 
-          this.velY = -(this.velY);    }
-      
-      //test for collision at the corners using Pythagoras to compare distance between ball and target centers.
-    //  var dx = distX-targets[j].width/2;
-    //  var dy = distY-targets[j].height/2;
-     // if ((dx*dx+dy-dy) <= (theBall.size*theBall.size)) { targets[j].exists = false; }
-      
-  }
-    
-    
-    
-    //find the distances - vertical and horizontal - between the balls center and the bouncers center
-      var distA = Math.abs((theBall.x + theBall.size) - (thebouncer.x-(thebouncer.bwidth/2)));
-      var distB = Math.abs((theBall.y+theBall.size) - (thebouncer.y-(thebouncer.bheight/2)));
-    // check for collision with thebouncer
-    console.log(distA);
-    if (distA == 0 && distB == 0) { 
-        // theBall.color = "green";
-       // theBall.velX *= -1; 
-        theBall.velY *= -1;
-    } 
-}
-   
-   */
 
 // make sure the bouncer isn't going off the edge of the screen
 bouncer.prototype.checkBounds = function() {
@@ -187,6 +169,7 @@ var targets = [];
 var thebouncer = new bouncer(10, (height - 200), "magenta");
       thebouncer.setControl();
 var theBall = new Ball(50, (height-230), "magenta", 2, 2, 20);
+var theGame = new game(3,1);
 
 // var testTarget = new Target(10,10,true,'rgba(255, 0, 0, 1)',100,100);
 
@@ -202,7 +185,8 @@ function loop() {
     var xCoor = 10;
     var yCoor = 10;
   while (targets.length < 10) {
-    var makeTarget = new Target(xCoor,yCoor,"magenta",true,40,10);  
+    var makeTarget = new Target(xCoor,yCoor,"magenta",true,40,10);
+      increaseScore();
     targets.push(makeTarget);
       xCoor += 60;
      if (xCoor > width) {
@@ -210,7 +194,6 @@ function loop() {
           yCoor += 50;
       }
 
-     // increaseScore();
   }
 
     // Draw all of the targets that still exist
