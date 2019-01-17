@@ -27,7 +27,14 @@ h1 {
 p {
   position: absolute;
   margin: 0;
-  top: 35px;
   right: 5px;
   color: #aaa;
+}
+
+.targets {
+    top:35px;
+}
+
+.lives {
+    top:70px;
 }

@@ -6,19 +6,39 @@ var ctx = canvas.getContext('2d');
 var width = canvas.width = window.innerWidth;
 var height = canvas.height = window.innerHeight;
 
-var scoreBoard = document.querySelector("p").innerHTML;
+var scoreBoard = document.querySelector("p.targets").innerHTML;
 var targetCount = 0;
+
+var livesDisplay = document.querySelector("p.lives").innerHTML;
+var livesCount = 3;
+
+/* ::::::::::: functions to increase/decrease target count and lives ::::::::::: */
     
 function increaseScore() {
     targetCount++;
     scoreBoard = "Target count: " + targetCount;
-    document.querySelector("p").innerHTML = scoreBoard;
+    document.querySelector("p.targets").innerHTML = scoreBoard;
 }
 
 function decreaseScore() {
     targetCount--;
     scoreBoard = "Target count: " + targetCount;
-    document.querySelector("p").innerHTML = scoreBoard;
+    document.querySelector("p.targets").innerHTML = scoreBoard;
+}
+
+function increaseLives() {
+    livesCount++;
+    livesDisplay = "Lives Remaining: " + livesCount;
+    document.querySelector("p.lives").innerHTML = livesDisplay;
+}
+
+function decreaseLives() {
+    livesCount--;
+    livesDisplay = "Lives Remaining: " + livesCount;
+    document.querySelector("p.lives").innerHTML = livesDisplay;
+    theBall.x = thebouncer.x + thebouncer.bwidth/2;
+    theBall.y = thebouncer.y - theBall.size;
+    theBall.velY = -1;
 }
 
 /* ::::::::: ALL CONSTRUCTORS ::::::::::: */
@@ -100,9 +120,7 @@ Ball.prototype.update = function() {
   }
 
   if ((this.y + this.size) >= height) {
-   // this.velY = -(this.velY);
-      theGame.lives -= 1;
-      // and now stop or reset the animation somehow
+    decreaseLives();
   }
 
   if ((this.y - this.size) <= 0) {
@@ -122,28 +140,32 @@ Ball.prototype.collisionDetect = function() {
     // test for ball hitting targets
     
     for (var j = 0; j < targets.length; j++) {
-        var circle = new C(new V(theBall.x,theBall.y), theBall.size);
-        var polygon = new P(new V(targets[j].x,targets[j].y), [
-            new V(0,0), new V(0,targets[j].height), new V(targets[j].width,targets[j].height), new V(targets[j].width,0)
-        ]);
-        var response = new SAT.Response();
-        var collided = SAT.testCirclePolygon(circle, polygon, response);
+        if (targets[j].exists == true) {
+            var circle = new C(new V(theBall.x,theBall.y), theBall.size);
+            var polygon = new P(new V(targets[j].x,targets[j].y), [
+                new V(0,0), new V(targets[j].width,0), new V(targets[j].width,targets[j].height), new V(0,targets[j].height)
+            ]);
+           // console.log(polygon);
+            var response = new SAT.Response();
+            var collided = SAT.testCirclePolygon(circle, polygon, response);
 
-        if (collided == true) {
-            targets[j]. exists = false;
-            decreaseScore();
-            this.velY = -(this.velY);
+            if (collided == true) {
+                targets[j]. exists = false;
+                decreaseScore();
+                this.velY = -(this.velY);
+            }
         }
     }
     
     // test for ball hitting thebouncer
     
-    var ball = new C(new V(theBall.x,theBall.y), theBall.size);
+    var tball = new C(new V(theBall.x,theBall.y), theBall.size);
     var Colbouncer = new P(new V(thebouncer.x,thebouncer.y), [
-        new V(thebouncer.x,thebouncer.y), new V(0,thebouncer.bheight), new V(thebouncer.bwidth,thebouncer.bheight), new V(thebouncer.bwidth,0)
-    ]);
-        var responseB = new SAT.Response();
-        var collidedB = SAT.testCirclePolygon(ball, Colbouncer, responseB);
+            new V(0,0), new V(thebouncer.bwidth,0), new V(thebouncer.bwidth,thebouncer.bheight), new V(0,thebouncer.bheight)
+        ]);
+    //console.log(Colbouncer);
+    var responseB = new SAT.Response();
+    var collidedB = SAT.testCirclePolygon(tball, Colbouncer, responseB);
 
         if (collidedB == true) {
             this.velY = -(this.velY);
@@ -216,7 +238,7 @@ function loop() {
 loop();
 
 
-/*
+/* FUTURE DEV
 - targets could be random colors, each color representing a different amount of points.
 - multiple levels to go through once completed - each level with different sized targets, faster/slower balls and more/less targets or even multiple balls
 - "lives" counter until gameover
