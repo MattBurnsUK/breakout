@@ -39,6 +39,11 @@ function decreaseLives() {
     theBall.x = thebouncer.x + thebouncer.bwidth/2;
     theBall.y = thebouncer.y - theBall.size;
     theBall.velY = -1;
+    if (livesCount < 0) {
+        console.log("gameover");
+        window.cancelAnimationFrame(loop);
+        gameOverMsg();
+    }
 }
 
 /* ::::::::: ALL CONSTRUCTORS ::::::::::: */
@@ -230,12 +235,22 @@ function loop() {
         theBall.update();
         theBall.draw();
 
-    
-  requestAnimationFrame(loop); //requestAnimationFrame is a built in method, which runs the same method a set number of times per second to create a smooth animation.
+    if (livesCount >= 0) {
+      window.requestAnimationFrame(loop); //requestAnimationFrame is a built in method, which runs the same method a set number of times per second to create a smooth animation.
+    }
 }
 
 // call the function once to get the enimation started.
 loop();
+
+function gameOverMsg() {
+    document.querySelector("p.gameOverFalse").className = "gameOverTrue";
+    
+    var reseter = document.querySelector("p.gameOverTrue");
+    reseter.onclick = function() {
+        window.location.reload();
+    }
+}
 
 
 /* FUTURE DEV
